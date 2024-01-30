@@ -1,21 +1,41 @@
 from flask import Flask
-from dotenv import load_dotenv
+from config import Config
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
+
+from logging.handlers import RotatingFileHandler 
+import logging
+from app.extensions import db
 
 
-db = SQLAlchemy()
+def create_app(config_class=Config):
+    #imports
+    from app.main import bp as main_bp
+    from app.jwt_auth import auth_bp as abp
 
-load_dotenv()
-
-def create_app():
     app = Flask(__name__)
+    app.config.from_object(config_class)
 
-    app.config.from_prefixed_env()
+    #Initialize Flask extensions here
     db.init_app(app)
-    
-    migrate = Migrate(app,db)
-    
+    # migrate = Migrate(app,db)
 
+    # Configure logging
+    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.ERROR)  # Set the logging level to ERROR
+    app.logger.addHandler(handler)
+
+    # Suppress INFO messages for SQLAlchemy and Alembic
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.ERROR)
+    logging.getLogger('alembic').setLevel(logging.ERROR)
+
+    #Register blueprints here
+    app.register_blueprint(main_bp)
+    app.register_blueprint(abp, url_prefix="/auth")
+
+
+    @app.route("/test/")
+    def test_page():
+        return "<h1>Testin the flask application factory pattern</h1>"
+    
     return app
 
