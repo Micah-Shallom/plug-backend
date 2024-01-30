@@ -7,12 +7,12 @@ def generate_uuid():
     return uuid4()
 
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ = "usersTable"
 
     id = db.Column(db.Integer, primary_key=True, default=str(generate_uuid))
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.Text(128))
+    password = db.Column(db.String(128))
     role =  db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

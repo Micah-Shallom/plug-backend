@@ -17,7 +17,9 @@ def create_app(config_class=Config):
 
     #Initialize Flask extensions here
     db.init_app(app)
-    # migrate = Migrate(app,db)
+    migrate = Migrate(db=db, render_as_batch=True)
+    migrate.init_app(app=app)
+
 
     # Configure logging
     handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
@@ -31,11 +33,9 @@ def create_app(config_class=Config):
     #Register blueprints here
     app.register_blueprint(main_bp)
     app.register_blueprint(abp, url_prefix="/auth")
-
-
-    @app.route("/test/")
-    def test_page():
-        return "<h1>Testin the flask application factory pattern</h1>"
     
     return app
+
+from app.models import userAuthModel
+
 
