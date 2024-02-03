@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from config import Config
 from flask_migrate import Migrate
+from app.models import User
 
 from logging.handlers import RotatingFileHandler 
 import logging
@@ -34,6 +35,12 @@ def create_app(config_class=Config):
     #Register blueprints here
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    #load user
+    @jwt.user_lookup_loader
+    def user_lookup_callback(__jwt_headers, jwt_data):
+        identity = jwt_data['sub']
+        return User.query.filter_by(username=identity).one_or_none()
 
     #additional claims
     @jwt.additional_claims_loader
