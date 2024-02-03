@@ -35,6 +35,17 @@ def create_app(config_class=Config):
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
+    #additional claims
+    @jwt.additional_claims_loader
+    def make_additional_claims(identity):
+        #query for more additional claims if the logged in user is admin
+
+        admin_list = ["micahshallom","graceigbadun"]
+
+        if identity in admin_list:
+            return {"is_admin":True}
+        return {"is_admin": False}
+
     #jwt error handlers
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_data):
@@ -58,6 +69,7 @@ def create_app(config_class=Config):
         }), 401
 
     return app
+
 
 from app.models import userAuthModel
 
