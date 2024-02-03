@@ -4,15 +4,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4
 
 def generate_uuid():
-    return uuid4()
+    return str(uuid4())
 
 class User(db.Model):
-    __tablename__ = "usersTable"
+    __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, default=str(generate_uuid))
+    uid = generate_uuid()
+
+    id = db.Column(db.String(256), primary_key=True, default=uid)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128))
+    password = db.Column(db.String(1000), nullable=False)
     role =  db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -20,6 +22,7 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.role = role
+        self.password = password
         self.set_password(password)
 
     def __repr__(self):

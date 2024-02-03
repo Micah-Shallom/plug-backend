@@ -83,43 +83,5 @@ Traceback (most recent call last):
 sqlalchemy.exc.DataError: (psycopg2.errors.StringDataRightTruncation) value too long for type character varying(128)
 
 [SQL: INSERT INTO users (id, username, email, password, role, created_at) VALUES (%(id)s, %(username)s, %(email)s, %(password)s, %(role)s, %(created_at)s)]
-[parameters: {'id': '539c980c', 'username': 'micahshallom', 'email': 'micahshallom@gmail.com', 'password': 'scrypt:32768:8:1$0yc08htebtmv5wym$a0dbf073be88b04561fa9d23ee11f51c4c633afae6a74819a0946ea0b02d833662fc990eea63549e976995d71070087cdf88e4f55383fe36224ddf6afa3aa8e4', 'role': 'buyer', 'created_at': datetime.datetime(2024, 1, 30, 8, 14, 33, 505577)}]
+[parameters: {'id': '27b843ef', 'username': 'micahshallom', 'email': 'micahshallom@gmail.com', 'password': 'scrypt:32768:8:1$6AYN6ALanDqoPCIR$37b5c02d2ab4416c432fe6497c8d62a3b715dc69817c9e77599dad4b8b8650d87acee0167e046df2806450858d7a49a88337f6aa3961b52f3d68987193230b81', 'role': 'buyer', 'created_at': datetime.datetime(2024, 1, 30, 8, 13, 33, 123458)}]
 (Background on this error at: https://sqlalche.me/e/20/9h9h)
-Exception on /auth/login [POST]
-Traceback (most recent call last):
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\app.py", line 855, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\app\jwt_auth\routes.py", line 50, in login_user
-    return jsonify({"error: Invalid username and password"}), 400
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
-    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\json\provider.py", line 214, in response
-    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\json\provider.py", line 179, in dumps
-    return json.dumps(obj, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.1776.0_x64__qbz5n2kfra8p0\Lib\json\__init__.py", line 238, in dumps
-    **kw).encode(obj)
-          ^^^^^^^^^^^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.1776.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 200, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.1776.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 258, in iterencode
-    return _iterencode(o, 0)
-           ^^^^^^^^^^^^^^^^^
-  File "C:\Users\micah\Documents\WorkSpaces\Projects\advert-backend\env\Lib\site-packages\flask\json\provider.py", line 121, in _default
-    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
-TypeError: Object of type set is not JSON serializable
