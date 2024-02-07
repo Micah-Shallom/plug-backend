@@ -45,3 +45,16 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+
+class TokenBlockList(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    jti = db.Column(db.String(), nulllable=False)
+    created_at = db.Column(db.DateTime(),default= datetime.utcnow)
+
+    def __repr__(self) -> str:
+        return f"<Token {self.jti}>"
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
