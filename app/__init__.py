@@ -1,16 +1,17 @@
-from flask import Flask
+from flask import Flask, jsonify
 from config import Config
 from flask_migrate import Migrate
+from app.models import User
 
 from logging.handlers import RotatingFileHandler 
 import logging
-from app.extensions import db
+from app.extensions import db, jwt
 
 
 def create_app(config_class=Config):
     #imports
-    from app.main import bp as main_bp
-    from app.jwt_auth import auth_bp as abp
+    from app.users import user_bp
+    from app.jwt_auth import auth_bp
 
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -19,6 +20,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate = Migrate(db=db, render_as_batch=True)
     migrate.init_app(app=app)
+    jwt.init_app(app)
 
 
     # Configure logging
@@ -31,10 +33,50 @@ def create_app(config_class=Config):
     logging.getLogger('alembic').setLevel(logging.ERROR)
 
     #Register blueprints here
-    app.register_blueprint(main_bp)
-    app.register_blueprint(abp, url_prefix="/auth")
+    app.register_blueprint(user_bp, url_prefix="/users")
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    #load user
+    @jwt.user_lookup_loader
+    def user_lookup_callback(__jwt_headers, jwt_data):
+        identity = jwt_data['sub']
+        return User.query.filter_by(username=identity).one_or_none()
+
+    #additional claims
+    @jwt.additional_claims_loader
+    def make_additional_claims(identity):
+        #query for more additional claims if the logged in user is admin
+
+        admin_list = ["micahshallom","graceigbadun"]
+
+        if identity in admin_list:
+            return {"is_admin":True}
+        return {"is_admin": False}
+
+    #jwt error handlers
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_data):
+        return jsonify({
+            "message":"Token has expired",
+            "error":"token_expired"
+        }), 401
     
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return jsonify({
+            "message":"Signature verification failed",
+            "error":"invalid_token"
+        }), 401
+    
+    @jwt.unauthorized_loader
+    def missing_token_callback(error):
+        return jsonify({
+            "message": "Request doesnt contain valid token",
+            "error": "authorization_error"
+        }), 401
+
     return app
+
 
 from app.models import userAuthModel
 
