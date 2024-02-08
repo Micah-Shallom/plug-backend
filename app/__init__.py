@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from config import Config
 from flask_migrate import Migrate
-from app.models import User
+from app.models import User, TokenBlockList
 
 from logging.handlers import RotatingFileHandler 
 import logging
@@ -74,6 +74,14 @@ def create_app(config_class=Config):
             "message": "Request doesnt contain valid token",
             "error": "authorization_error"
         }), 401
+    
+    @jwt.token_in_blocklist_loader
+    def token_in_blocklist_callback(jwt_header, jwt_data):
+        jti = jwt_data['jti']
+
+        token = db.session.query(TokenBlockList).filter(TokenBlockList.jti == jti).scalar()
+
+        return token is not None
 
     return app
 

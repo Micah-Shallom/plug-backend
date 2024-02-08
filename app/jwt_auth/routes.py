@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 @auth_bp.post("/register")
 def registerUser():
-    from app.models.userAuthModel import User
+    from app.models.userAuthModel import User, TokenBlockList
 
     data = request.get_json()
 
@@ -60,3 +60,28 @@ def whoami():
             "role": current_user.role
         }
     })
+
+
+@auth_bp.get('/refresh')
+@jwt_required(refresh=True)
+def refresh_accessToken():
+    identity = get_jwt_identity()
+
+    new_access_token = create_access_token(identity=identity)
+
+    return jsonify({"access_token": new_access_token})
+
+@auth_bp.get("/logout")
+@jwt_required(verify_type=False)
+def logout_user():
+    from app.models.userAuthModel import TokenBlockList
+
+    jwt = get_jwt()
+    jti = jwt['jti']
+    token_type = jwt["type"]
+
+    token_b = TokenBlockList(jti=jti)
+
+    token_b.save()
+
+    return jsonify({"message":f"{token_type} revoked successfully"}), 200
