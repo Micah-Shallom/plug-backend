@@ -1,6 +1,6 @@
 from app.jwt_auth import auth_bp
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user, get_jwt_identity, get_jwt
 
 @auth_bp.post("/register")
 def registerUser():
