@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from config import Config
 from flask_migrate import Migrate
-from app.models import User, TokenBlockList
+from app.models.userAuthModel import User, TokenBlockList
 
 from logging.handlers import RotatingFileHandler 
 import logging
@@ -12,6 +12,7 @@ def create_app(config_class=Config):
     #imports
     from app.users import user_bp
     from app.jwt_auth import auth_bp
+    from app.listings import category_bp, product_bp
 
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -35,6 +36,8 @@ def create_app(config_class=Config):
     #Register blueprints here
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(category_bp, url_prefix="/category")
+    app.register_blueprint(product_bp, url_prefix="/products")
 
     #load user
     @jwt.user_lookup_loader
