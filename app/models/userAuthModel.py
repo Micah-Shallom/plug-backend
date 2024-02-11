@@ -1,10 +1,9 @@
 from app.extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from uuid import uuid4
+from app.utils import generate_uuid
 
-def generate_uuid():
-    return str(uuid4())
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -48,8 +47,10 @@ class User(db.Model):
 
 
 class TokenBlockList(db.Model):
+    __tablename__="tokenblocklist"
+
     id = db.Column(db.Integer(), primary_key=True)
-    jti = db.Column(db.String(), nulllable=False)
+    jti = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime(),default= datetime.utcnow)
 
     def __repr__(self) -> str:
