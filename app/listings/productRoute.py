@@ -1,19 +1,21 @@
 from flask import request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, current_user
 from app.models.productModel import Product
+from app.models.categoryModel import Category
 from app.listings import product_bp
 from app.extensions import db
-from app.utils.generators import is_buyer, is_seller
+from app.utils.generators import is_seller
 
 # create product
 @product_bp.post("/create")
-@is_seller()
 @jwt_required()
+@is_seller
 def create_product():
     data =  request.get_json()
+    category = Category.query.filter_by(name=data.get("category")).first()
 
-    seller_id = ""
-    category_id = ""
+    seller_id = current_user.id
+    category_id = category.category_id
     title = data.get("title")
     description = data.get("description")
     price = data.get("price")
@@ -25,16 +27,16 @@ def create_product():
     
     try:
         new_product = Product(
-            seller_id,
-            category_id,
-            title,
-            description,
-            price
+            seller_id = seller_id,
+            category_id = category_id,
+            title = title,
+            description = description,
+            price = price
         )
 
         new_product.save()
 
-        return jsonify({"message":"Listing created successfully"}), 200
+        return jsonify({"message":"Product Listing created successfully"}), 200
     except Exception as e:
         return jsonify({"message":str(e)}), 500
     
@@ -59,7 +61,7 @@ def get_products():
         return jsonify({"message", str(e)}), 500
 
 # get product listing by id
-@product_bp.get("/<str:product_id>")
+@product_bp.get("/<string:product_id>")
 def get_product_by_id(product_id):
     product = Product.query.get_or_404(product_id)
 
@@ -71,33 +73,30 @@ def get_product_by_id(product_id):
     data["price"] = product.price
 
     return jsonify({
-        "message": "prodct fetched successfully",
+        "message": "product fetched successfully",
         "result" : data
     })
 
 # update product listing 
-@product_bp.put("/update/<str:product_id>")
-@is_seller()
+@product_bp.put("/update/<string:product_id>")
 @jwt_required()
+@is_seller
 def update_product(product_id):
     data = request.get_json()
-    product = Product.query.get(product_id)
+    product = Product.query.filter_by(product_id=product_id).first()
+
+    print(product.title)
+    # return jsonify({"":""}), 200
 
     if not product:
         return jsonify({"message":"Product not found"}), 404
     
+    for key, val in data.items():
+        if not product.key:
+            return jsonify({"message":"Attempting to update field that does not exist"}), 400
 
-    title = data.get("title")
-    desctiption =  data.get("description")
-    price = data.get("price")
-
-    if not (title and desctiption and price):
-        return jsonify({"message":"Missing required fields"}), 400
+        product[key] = val
     
-    product.title = title
-    product.description = desctiption
-    product.price = price
-
     try:
         db.session.commit()
         return jsonify({
@@ -108,8 +107,8 @@ def update_product(product_id):
         return jsonify({"message", str(e)}), 500
 
 # delete product listing
-@product_bp.delete("/delete/<str:product_id>")
-@is_seller()
+@product_bp.delete("/delete/<string:product_id>")
+@is_seller
 @jwt_required()
 def delete_listing(product_id):
     product = Product.query.get(product_id)

@@ -27,7 +27,7 @@ def create_category():
         return jsonify({"message": str(e)}), 500
 
 # get products by category
-@category_bp.get("/<str:category_id>/products")
+@category_bp.get("/<string:category_id>/products")
 def get_products_by_category(category_id):
     products = Product.query.filter_by(category_id=category_id).all()
 
