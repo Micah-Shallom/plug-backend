@@ -1,22 +1,9 @@
-from functools import wraps
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 from app.listings import category_bp
 from app.models.categoryModel import Category
-
-def admin_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        user_token_data = get_jwt()
-        is_admin = user_token_data.get("is_admin",False)
-
-        if not is_admin:
-            return jsonify({
-                "message": "Only admin users can access this endpoint"
-            }), 403
-        
-        return fn(*args, **kwargs)
-    return wrapper
+from app.utils.generators import admin_required
+from app.models.productModel import Product
 
 
 @category_bp.post("/add")
@@ -38,3 +25,24 @@ def create_category():
         }), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+
+# get products by category
+@category_bp.get("/<str:category_id>/products")
+def get_products_by_category(category_id):
+    products = Product.query.filter_by(category_id=category_id).all()
+
+    product_list = list()
+
+    for product in products:
+        product_list.append(
+            {
+                "title": product.title,
+                "description": product.description,
+                "price": product.price
+            }
+        )
+    
+    return jsonify({
+        "message": "Category Products fetched successfully",
+        "results": product_list
+    }), 201
