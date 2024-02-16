@@ -77,7 +77,7 @@ def get_paginated_products():
     for product in products:
         products_data.append(
             {
-                "id": product.id,
+                "id": product.product_id,
                 "title": product.title,
                 "desc": product.description,
                 "price": product.price,

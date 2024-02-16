@@ -15,7 +15,7 @@ def get_products_by_category(category_id):
 
     for product in products:
         product_data = {
-            'id': product.id,
+            'id': product.product_id,
             'title': product.title,
             'description': product.description,
             'price': product.price,
@@ -51,7 +51,7 @@ def get_paginated_products_by_cateory(category_id):
 
     for product in products:
         product_data = {
-            'id': product.id,
+            'id': product.product_id,
             'title': product.title,
             'description': product.description,
             'price': product.price,
@@ -69,7 +69,7 @@ def get_paginated_products_by_cateory(category_id):
         'has_prev': products.has_prev
     }
 
-    return jsonify({"category":category.title,"products":products_data, "pagination":pagination_data})
+    return jsonify({"category":category.name,"products":products_data, "pagination":pagination_data})
 
 
 @category_bp.post("/add")
