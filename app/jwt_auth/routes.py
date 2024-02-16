@@ -71,6 +71,7 @@ def refresh_accessToken():
 
     return jsonify({"access_token": new_access_token})
 
+
 @auth_bp.get("/logout")
 @jwt_required(verify_type=False)
 def logout_user():
