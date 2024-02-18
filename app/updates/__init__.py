@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-profileUpdate_bp = Blueprint("profileUpdate", __name__)
+profileUpdate_bp = Blueprint("update", __name__)
 
-from app.updates import profileUpdateRoute, imageUploadRoute
+from app.updates import imageUploadRoute, profileUpdateRoute

@@ -16,7 +16,7 @@ class User(db.Model):
     password = db.Column(db.String(1000), nullable=False)
     role =  db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    fullname = db.Column(db.String(120), nullable=False)
+    fullname = db.Column(db.String(120), nullable=True)
     profile_picture =  db.Column(db.String(256))
     bio = db.Column(db.Text, nullable=True)
     phone_number = db.Column(db.String(15), nullable=True)

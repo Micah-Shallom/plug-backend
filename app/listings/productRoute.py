@@ -4,7 +4,7 @@ from app.models.productModel import Product
 from app.models.categoryModel import Category
 from app.listings import product_bp
 from app.extensions import db
-from app.utils.generators import is_seller
+from app.utils.decorators import is_seller
 
 # Endpoint to create a new product listing
 @product_bp.post("/create")

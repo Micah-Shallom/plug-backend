@@ -2,7 +2,7 @@ from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 from app.listings import category_bp
 from app.models.categoryModel import Category
-from app.utils.generators import admin_required
+from app.utils.decorators import admin_required
 from app.models.productModel import Product
 
 

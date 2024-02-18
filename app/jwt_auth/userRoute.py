@@ -61,6 +61,7 @@ def whoami():
         "message": "message",
         "user_details":{
             "username": current_user.username,
+            "fullname": current_user.fullname,
             "email": current_user.email,
             "role": current_user.role
         }

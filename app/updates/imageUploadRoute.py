@@ -4,7 +4,7 @@ import cloudinary.api
 import logging
 import os
 from dotenv import load_dotenv
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
 from flask import jsonify
 from flask import request
 from cloudinary.utils import cloudinary_url
@@ -13,18 +13,17 @@ from app.updates import profileUpdate_bp
 from app.models import User
 
 
-app = create_app()
 load_dotenv()
 
-CORS(app)
 logging.basicConfig(level=logging.DEBUG)
-#verify cloud
-app.logger.info('%s',os.getenv('CLOUD_NAME'))
 
 
 @profileUpdate_bp.post("/upload/<string:user_id>")
 @cross_origin()
 def upload_file(user_id):
+    #verify cloud
+    app = create_app()
+    app.logger.info('%s',os.getenv('CLOUD_NAME'))
     app.logger.info('in upload route')
 
     cloudinary.config(cloud_name=os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
@@ -53,10 +52,10 @@ def upload_file(user_id):
         app.logger.info(type(upload_result))
 
         #get the secure url of the photo upload
-        secure_image_url = upload_result.secure_url
+        secure_image_url = upload_result["secure_url"]
 
         #Update the users profile photo url in the User database
-        user = User.query.filter_by(user_id=user_id).first()
+        user = User.query.filter_by(id=user_id).first()
 
 
         if user:
@@ -85,6 +84,7 @@ def upload_file(user_id):
 @profileUpdate_bp.post("/cld_optimize")
 @cross_origin()
 def cld_optimize():
+  app = create_app()
   app.logger.info('in optimize route')
 
   cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
