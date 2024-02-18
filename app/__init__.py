@@ -6,6 +6,7 @@ from app.models.userAuthModel import User, TokenBlockList
 from logging.handlers import RotatingFileHandler 
 import logging
 from app.extensions import db, jwt
+from flask_cors import CORS
 
 
 def create_app(config_class=Config):
@@ -17,6 +18,7 @@ def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+    CORS(app)
 
     # Initialize Flask extensions
     db.init_app(app)
