@@ -3,7 +3,7 @@ flask db migrate -m "Initial migration"
 flask db upgrade
 
 
-to send a post reuest with some dummy json data attached to it, you can create an external file with the dummy json data say response-body.json
+to send a post request with some dummy json data attached to it, you can create an external file with the dummy json data say response-body.json
 
 
 curl --request POST --data '@request-body.json' --header 'Content-Type: application/json' 'http://localhost:5000/project'

@@ -25,8 +25,20 @@ def get_all_users():
 
         result = UserSchema().dump(users, many=True)
 
+        #construct pagination metadata
+        pagination_data = {
+            "total": users.total,
+            "pages": users.page,
+            "page": users.page,
+            "per_page": users.per_page,
+            "has_next": users.has_next,
+            "has_prev": users.has_prev
+        }
+
+
         return jsonify({
-            "users":result
+            "users":result,
+            "pagination": pagination_data
         }), 200
     return jsonify({
         "message": "You are not authorized to access this"

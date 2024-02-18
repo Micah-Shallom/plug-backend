@@ -16,9 +16,15 @@ class User(db.Model):
     password = db.Column(db.String(1000), nullable=False)
     role =  db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    fullname = db.Column(db.String(120), nullable=False)
+    profile_picture =  db.Column(db.String(256))
+    bio = db.Column(db.Text, nullable=True)
+    phone_number = db.Column(db.String(15), nullable=True)
+    secondary_email = db.Column(db.String(120), nullable=True)
 
-    def __init__(self, username, email, password, role) -> None:
+    def __init__(self,fullname, username, email, password, role) -> None:
         self.username = username
+        self.full_name = fullname
         self.email = email
         self.role = role
         self.password = password
@@ -36,6 +42,10 @@ class User(db.Model):
     @classmethod
     def get_user_by_username(cls,username):
         return cls.query.filter_by(username=username).first()
+    
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
 
     def save(self):
         db.session.add(self)
@@ -44,6 +54,9 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    def rollback(self):
+        db.session.rollback()
 
 
 class TokenBlockList(db.Model):

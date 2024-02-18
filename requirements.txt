@@ -1,8 +1,11 @@
 alembic==1.13.1
 blinker==1.7.0
+certifi==2024.2.2
 click==8.1.7
+cloudinary==1.38.0
 colorama==0.4.6
 Flask==3.0.1
+Flask-Cors==4.0.0
 Flask-JWT-Extended==4.6.0
 Flask-Migrate==4.0.5
 Flask-SQLAlchemy==3.1.1
@@ -16,9 +19,11 @@ packaging==23.2
 psycopg2-binary==2.9.9
 PyJWT==2.8.0
 python-dotenv==1.0.1
+six==1.16.0
 sqla-paranoid==0.1.1
 SQLAlchemy==2.0.25
 SQLAlchemy-SQLSchema==0.1
 SQLAlchemy-Utils==0.41.1
 typing_extensions==4.9.0
+urllib3==2.2.1
 Werkzeug==3.0.1
