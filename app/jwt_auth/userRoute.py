@@ -4,17 +4,22 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 @auth_bp.post("/register")
 def registerUser():
-    from app.models.userAuthModel import User, TokenBlockList
+    from app.models.userAuthModel import User
 
     data = request.get_json()
 
     user  = User.get_user_by_username(username=data.get("username"))
+    email = User.get_user_by_email(email=data.get("email"))
 
     if user is not None:
         return jsonify({"error":"User already created"}), 400
     
+    if email is not None:
+        return jsonify({"error": "an account has already been created with this email address"}), 400
+    
     new_user = User(
         username=data.get("username"),
+        fullname=data.get("fullname"),
         email=data.get("email"),
         role= data.get("role"),
         password=data.get("password")
@@ -47,7 +52,7 @@ def login_user():
             }
         ), 200
 
-    return jsonify({"error": "Invalid username and password"}), 400
+    return jsonify({"error": "Invalid username and/or password"}), 400
 
 @auth_bp.get('/whoami')
 @jwt_required()

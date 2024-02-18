@@ -13,6 +13,7 @@ def create_app(config_class=Config):
     from app.users import user_bp
     from app.jwt_auth import auth_bp
     from app.listings import category_bp, product_bp, seller_bp, search_bp
+    from app.updates import profileUpdate_bp
 
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -39,6 +40,7 @@ def create_app(config_class=Config):
     app.register_blueprint(product_bp, url_prefix="/products")
     app.register_blueprint(seller_bp, url_prefix="/sellers")
     app.register_blueprint(search_bp, url_prefix="/search")
+    app.register_blueprint(profileUpdate_bp, url_prefix="/update")
 
     # Define JWT user lookup loader
     @jwt.user_lookup_loader
