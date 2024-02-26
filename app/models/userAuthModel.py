@@ -1,21 +1,16 @@
 from app.extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.utils import generate_uuid
+from app.models.baseModel import BaseModel
 
 
-
-class User(db.Model):
+class User(BaseModel, db.Model):
     __tablename__ = "users"
 
-    uid = generate_uuid()
-
-    id = db.Column(db.String(256), primary_key=True, default=uid)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(1000), nullable=False)
     role =  db.Column(db.String(60), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     fullname = db.Column(db.String(120), nullable=True)
     profile_picture =  db.Column(db.String(256))
     bio = db.Column(db.Text, nullable=True)
@@ -30,9 +25,6 @@ class User(db.Model):
         self.password = password
         self.set_password(password)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
-    
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -47,28 +39,10 @@ class User(db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-    
-    def rollback(self):
-        db.session.rollback()
-
 
 class TokenBlockList(db.Model):
     __tablename__="tokenblocklist"
 
-    id = db.Column(db.Integer(), primary_key=True)
     jti = db.Column(db.String(), nullable=False)
-    created_at = db.Column(db.DateTime(),default= datetime.utcnow)
 
-    def __repr__(self) -> str:
-        return f"<Token {self.jti}>"
     
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
