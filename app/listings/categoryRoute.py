@@ -72,7 +72,7 @@ def get_paginated_products_by_cateory(category_id):
     return jsonify({"category":category.name,"products":products_data, "pagination":pagination_data})
 
 
-@category_bp.post("/add")
+@category_bp.post("/create")
 @jwt_required()
 @admin_required
 def create_category():

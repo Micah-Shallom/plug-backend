@@ -1,11 +1,11 @@
 from app.extensions import db
 from app.models.baseModel import BaseModel
 
-class BusinessModel(BaseModel, db.Model):
+class Business(BaseModel, db.Model):
     __tablename__ = "business"
 
-    name = db.Column(db.String(254), nullable=False)
-    description = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
     owner_id = db.Column(db.String(500), db.ForeignKey("users.id") ,nullable=False)
 
     #setup relationship between business and seller
