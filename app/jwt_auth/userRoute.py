@@ -8,26 +8,28 @@ def registerUser():
 
     data = request.get_json()
 
-    user  = User.get_user_by_username(username=data.get("username"))
-    email = User.get_user_by_email(email=data.get("email"))
+    # Check if username or email already exists
+    existing_user = User.get_user_by_username(data.get("username"))
+    existing_email = User.get_user_by_email(data.get("email"))
 
-    if user is not None:
-        return jsonify({"error":"User already created"}), 400
+    if existing_user:
+        return jsonify({"error": "User already exists"}), 400
     
-    if email is not None:
-        return jsonify({"error": "an account has already been created with this email address"}), 400
-    
+    if existing_email:
+        return jsonify({"error": "An account has already been created with this email address"}), 400
+
+    # Create a new user
     new_user = User(
         username=data.get("username"),
         fullname=data.get("fullname"),
         email=data.get("email"),
-        role= data.get("role"),
+        role=data.get("role"),
         password=data.get("password")
     )
     new_user.set_password(data.get("password"))
     new_user.save()
 
-    return jsonify({"message":"User Created"}), 201
+    return jsonify({"message": "User created successfully"}), 201
 
 
 @auth_bp.post("/login")

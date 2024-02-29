@@ -159,3 +159,7 @@ def delete_listing(business_id):
     if not business:
         # Return error message if the business is not found
         return jsonify({'message': 'Business not found'}), 404
+
+#more features/routes
+#---------getting products registered under a business
+    
