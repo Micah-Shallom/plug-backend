@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask_jwt_extended import jwt_required, current_user
 from app.models.productModel import Product
 from app.models.categoryModel import Category
+from app.models.businessModel import Business
 from app.listings import product_bp
 from app.extensions import db
 from app.utils.decorators import is_seller
@@ -14,11 +15,14 @@ def create_product():
     data = request.get_json()
 
     # Fetch the category from the provided data
-    category = Category.query.filter_by(name=data.get("category")).first()
+    category = Category.query.filter_by(name=data.get("category")).first_or_404()
+    business = Business.query.filter_by(name=data.get("business")).first()
+
 
     # Extract necessary fields from the request data
     seller_id = current_user.id
     category_id = category.id if category else None
+    business_id = business.id if business else None
     title = data.get("title")
     description = data.get("description")
     price = data.get("price")
@@ -34,13 +38,14 @@ def create_product():
         new_product = Product(
             seller_id=seller_id,
             category_id=category_id,
+            business_id = business_id,
             title=title,
             description=description,
             price=price
         )
 
         # Save the new product to the database
-        new_product.save()
+        new_product.save(commit=True)
 
         return jsonify({"message": "Product Listing created successfully"}), 200
     except Exception as e:
@@ -168,3 +173,9 @@ def delete_listing(product_id):
     product = Product.query.get(product_id)
     if not product:
         return jsonify({'message': 'Product not found'}), 404
+
+
+#==========TO ADD=================
+"""
+    Ability to Query Products based on businesses
+"""

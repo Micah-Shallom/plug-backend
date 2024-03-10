@@ -1,6 +1,6 @@
 from datetime import datetime
 from app.extensions import db
-from app.utils import generate_uuid
+from app.utils import generate_uuid as uuid
 from datetime import timezone
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -16,9 +16,8 @@ class BaseModel(db.Model):
 
     __abstract__ = True
 
-    uid = generate_uuid()
 
-    id = db.Column(db.String(256), primary_key=True, default=uid)
+    id = db.Column(db.String(256), primary_key=True, default=str(uuid()))
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
@@ -46,14 +45,14 @@ class BaseModel(db.Model):
                 if key != "__class__":
                     setattr(self, key, value)
                 if "id" not in kwargs:
-                    self.id = self.uid
+                    self.id = str(uuid())
                 if "created_at" not in kwargs:
                     self.created_at = datetime.now(timezone.utc)
                 if "updated_at" not in kwargs:
                     self.updated_at = datetime.now(timezone.utc)
 
         else:
-            self.id = self.uid
+            self.id = str(uuid())
             self.updated_at = self.created_at = datetime.now(timezone.utc)
 
     def __str__(self):

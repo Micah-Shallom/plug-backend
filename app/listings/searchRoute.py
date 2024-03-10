@@ -22,11 +22,12 @@ def search_products():
     search_results = []
     for product in results:
         product_data = {
-            'id': product.product_id,
+            'id': product.id,
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'category_id': product.category_id
+            'category_id': product.category_id,
+            'business_id': product.business_id
         }
         search_results.append(product_data)
     

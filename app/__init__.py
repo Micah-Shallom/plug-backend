@@ -28,7 +28,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
 
     # Configure logging
-    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler('logs/app.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.ERROR)  # Set the logging level to ERROR
     app.logger.addHandler(handler)
 

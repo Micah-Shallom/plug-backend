@@ -12,13 +12,15 @@ def get_products_by_seller(seller_id):
 
         for product in products:
             product_list.append({
-                "id": product.product_id,
-                "title": product.title,
-                "description": product.description,
-                "price": product.price,
+                'id': product.id,
+                'title': product.title,
+                'description': product.description,
+                'price': product.price,
+                'category_id': product.category_id,
+                'business_id': product.business_id
             })
 
         return jsonify(product_list)
 
     except Exception as e:
-        return jsonify({"error", str(e)}), 500
+        return jsonify({"message", str(e)}), 500
