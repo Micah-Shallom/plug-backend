@@ -5,13 +5,14 @@ from app.models.categoryModel import Category
 from app.utils.decorators import admin_required
 from app.models.productModel import Product
 
-
-# get products by category
+# Get products by category
 @category_bp.get("/<string:category_id>/products")
 def get_products_by_category(category_id):
+    # Query products by category_id
     products = Product.query.filter_by(category_id=category_id).all()
 
-    products_data = list()
+    # Convert products to JSON format
+    products_data = []
 
     for product in products:
         product_data = {
@@ -28,28 +29,29 @@ def get_products_by_category(category_id):
         "results": products_data
     }), 201
 
-#Route to retrieve a paginated list of products based on a specific category
+# Route to retrieve a paginated list of products based on a specific category
 @category_bp.get("/<string:category_id>/paginated-products")
-def get_paginated_products_by_cateory(category_id):
-    #pagination parameters
+def get_paginated_products_by_category(category_id):
+    # Pagination parameters
     page = request.args.get("page", 1, type=int)
-    per_page =  request.args.get("per_page", 10, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
 
-    #Query category by category_id
+    # Query category by category_id
     category = Category.query.get(category_id)
 
     if not category:
         return jsonify({"error": "Category not found"}), 404
     
+    # Query products with pagination
     products = Product.query.filter_by(category_id=category_id).paginate(
-        page = page,
-        per_page= per_page
+        page=page,
+        per_page=per_page
     )
 
-    #Convert products to json format
-    products_data = list()
+    # Convert products to JSON format
+    products_data = []
 
-    for product in products:
+    for product in products.items:
         product_data = {
             'id': product.product_id,
             'title': product.title,
@@ -59,7 +61,7 @@ def get_paginated_products_by_cateory(category_id):
         }
         products_data.append(product_data)
 
-    #Consturcting pagination data
+    # Construct pagination data
     pagination_data = {
         'total': products.total,
         'pages': products.pages,
@@ -69,9 +71,9 @@ def get_paginated_products_by_cateory(category_id):
         'has_prev': products.has_prev
     }
 
-    return jsonify({"category":category.name,"products":products_data, "pagination":pagination_data})
+    return jsonify({"category": category.name, "products": products_data, "pagination": pagination_data})
 
-
+# Create a new category
 @category_bp.post("/create")
 @jwt_required()
 @admin_required
@@ -80,20 +82,23 @@ def create_category():
 
     try:
         new_category = Category(
-            name = data.get("name"),
-            description = data.get("description")
+            name=data.get("name"),
+            description=data.get("description")
         )
 
         new_category.save()
 
         return jsonify({
-            "message":"Category created successfully"
+            "message": "Category created successfully"
         }), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
+
+# Get all categories
 @category_bp.get("/all")
 def get_all_categories():
+    # Query all categories
     data = Category.query.all()
 
     category_list = []
@@ -101,10 +106,7 @@ def get_all_categories():
     for cat in data:
         category_list.append({
             "name": cat.name,
-            "desc": cat.description
+            "description": cat.description
         })
 
     return jsonify(category_list), 200
-
-
-

@@ -7,7 +7,7 @@ from app.models import db
 
 # Endpoint to create a new business
 @business_bp.post("/create")
-@jwt_required
+@jwt_required()
 @is_seller
 def create_business():
     # Extract data from the request JSON

@@ -1,5 +1,4 @@
 from app.extensions import db
-from app.utils import generate_uuid
 from app.models.baseModel import BaseModel
 
 class Category(BaseModel,db.Model):

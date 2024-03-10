@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from config import Config
 from flask_migrate import Migrate
-from app.models.userAuthModel import User, TokenBlockList
+from app.models.userAuthModel import User
 
 from logging.handlers import RotatingFileHandler 
 import logging
@@ -28,7 +28,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
 
     # Configure logging
-    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler('logs/app.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.ERROR)  # Set the logging level to ERROR
     app.logger.addHandler(handler)
 
@@ -84,13 +84,13 @@ def create_app(config_class=Config):
             "error": "authorization_error"
         }), 401
     
-    @jwt.token_in_blocklist_loader
-    def token_in_blocklist_callback(jwt_header, jwt_data):
-        jti = jwt_data['jti']
+    # @jwt.token_in_blocklist_loader
+    # def token_in_blocklist_callback(jwt_header, jwt_data):
+    #     jti = jwt_data['jti']
 
-        token = db.session.query(TokenBlockList).filter(TokenBlockList.jti == jti).scalar()
+    #     token = db.session.query(TokenBlockList).filter(TokenBlockList.jti == jti).scalar()
 
-        return token is not None
+    #     return token is not None
 
     return app
 
