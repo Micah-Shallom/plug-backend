@@ -6,6 +6,7 @@ class Business(BaseModel, db.Model):
 
     name = db.Column(db.String(100), nullable=False, unique=True)
     description = db.Column(db.Text)
+
     owner_id = db.Column(db.String(500), db.ForeignKey("users.id") ,nullable=False)
 
     #setup relationship between business and seller

@@ -14,10 +14,9 @@ class ContactInfo(BaseModel, db.Model):
     phone = db.Column(db.String(20), nullable=True)
 
     #Define foreign keys
-    id = db.Column(db.String(256), db.ForeignKey("users.id"), nullable=False)
+    owner_id = db.Column(db.String(256), db.ForeignKey("users.id"), unique=True , nullable=False) #uniue is true because a user should hae only one contact information stored at a time
 
     #Define relationships
     user = db.relationship("User", backref=db.backref("contacts", lazy=True))
 
-    def __repr__(self):
-        return f"<ContactInfo(name='{self.name}', email='{self.email}', phone='{self.phone}', address='{self.address}')>"
+
