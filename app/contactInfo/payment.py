@@ -33,8 +33,7 @@ def get_all_payment_info():
                 'account_holder_name': payment_info.account_holder_name,
                 'address': payment_info.address,
                 'city': payment_info.city,
-                'state': payment_info.state,
-                'postal_code': payment_info.postal_code,
+                'state': payment_info.state
                 # Add more fields as needed
             }
             result.append(payment_info_data)
@@ -57,8 +56,7 @@ def get_payment_info(user_id):
                 'account_holder_name': payment_info.account_holder_name,
                 'address': payment_info.address,
                 'city': payment_info.city,
-                'state': payment_info.state,
-                'postal_code': payment_info.postal_code,
+                'state': payment_info.state
                 # Add more fields as needed
             }
             return jsonify(payment_info_data), 200

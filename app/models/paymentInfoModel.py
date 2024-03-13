@@ -13,7 +13,6 @@ class PaymentInfo(BaseModel, db.Model):
     address = db.Column(db.String(255), nullable=True)
     city = db.Column(db.String(100), nullable=True)
     state = db.Column(db.String(100), nullable=True)
-    postal_code = db.Column(db.String(20), nullable=True)
 
     #Define relationships
     user = db.relationship("User", backref=db.backref("payment", lazy=True))

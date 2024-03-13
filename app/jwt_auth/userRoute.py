@@ -80,17 +80,17 @@ def refresh_accessToken():
     return jsonify({"access_token": new_access_token})
 
 
-# @auth_bp.get("/logout")
-# @jwt_required(verify_type=False)
-# def logout_user():
-#     from app.models.userAuthModel import TokenBlockList
+@auth_bp.get("/logout")
+@jwt_required(verify_type=False)
+def logout_user():
+    from app.models.userAuthModel import TokenBlockList
 
-#     jwt = get_jwt()
-#     jti = jwt['jti']
-#     token_type = jwt["type"]
+    jwt = get_jwt()
+    jti = jwt['jti']
+    token_type = jwt["type"]
 
-#     token_b = TokenBlockList(jti=jti)
+    token_b = TokenBlockList(jti=jti)
 
-#     token_b.save()
+    token_b.save(commit=True)
 
-#     return jsonify({"message":f"{token_type} revoked successfully"}), 200
+    return jsonify({"message":f"{token_type} revoked successfully and user has been logged out"}), 200
