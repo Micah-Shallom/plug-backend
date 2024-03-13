@@ -2,8 +2,9 @@ from app.jwt_auth import auth_bp
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user, get_jwt_identity, get_jwt
 
+# Endpoint to register a new user
 @auth_bp.post("/register")
-def registerUser():
+def register_user():
     from app.models.userAuthModel import User
 
     data = request.get_json()
@@ -31,7 +32,7 @@ def registerUser():
 
     return jsonify({"message": "User created successfully"}), 201
 
-
+# Endpoint to log in a user
 @auth_bp.post("/login")
 def login_user():
     from app.models.userAuthModel import User
@@ -40,14 +41,14 @@ def login_user():
 
     user = User.get_user_by_username(username=data.get("username"))
 
-    if user and (user.check_password(password= data.get("password"))):
+    if user and (user.check_password(password=data.get("password"))):
         access_token = create_access_token(identity=user.username)
         refresh_token = create_refresh_token(identity=user.password)
 
         return jsonify(
             {
                 "message": "Logged in successfully",
-                "tokens":{
+                "tokens": {
                     "access_token": access_token,
                     "refresh_token": refresh_token
                 }
@@ -56,12 +57,13 @@ def login_user():
 
     return jsonify({"error": "Invalid username and/or password"}), 400
 
+# Endpoint to get details of the current user
 @auth_bp.get('/whoami')
 @jwt_required()
-def whoami():
+def who_am_i():
     return jsonify({
-        "message": "message",
-        "user_details":{
+        "message": "User details retrieved successfully",
+        "user_details": {
             "username": current_user.username,
             "fullname": current_user.fullname,
             "email": current_user.email,
@@ -69,17 +71,17 @@ def whoami():
         }
     })
 
-
+# Endpoint to refresh the access token
 @auth_bp.get('/refresh')
 @jwt_required(refresh=True)
-def refresh_accessToken():
+def refresh_access_token():
     identity = get_jwt_identity()
 
     new_access_token = create_access_token(identity=identity)
 
     return jsonify({"access_token": new_access_token})
 
-
+# Endpoint to log out a user
 @auth_bp.get("/logout")
 @jwt_required(verify_type=False)
 def logout_user():
@@ -93,4 +95,4 @@ def logout_user():
 
     token_b.save(commit=True)
 
-    return jsonify({"message":f"{token_type} revoked successfully and user has been logged out"}), 200
+    return jsonify({"message": f"{token_type} revoked successfully and user has been logged out"}), 200
