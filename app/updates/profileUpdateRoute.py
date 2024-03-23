@@ -21,11 +21,11 @@ def update_profile(user_id):
     user.phone_number = data.get("phone_number", user.phone_number)
     user.secondary_email = data.get("secondary_email", user.secondary_email)
     try:
-        user.save()
+        user.save(commit=True)
         return jsonify({"message":"User profile updated successfully"}), 201
 
     except Exception as e:
-        user.rollback()
+        # user.rollback()
         return jsonify({'message': 'Failed to update profile picture'}), 500
 
     
