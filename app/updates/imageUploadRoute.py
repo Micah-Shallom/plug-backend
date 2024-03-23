@@ -14,7 +14,6 @@ from app.models import User
 
 
 load_dotenv()
-
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -61,12 +60,12 @@ def upload_file(user_id):
         if user:
             user.profile_picture = secure_image_url
             try:
-                user.save()
-                return jsonify({"message":"Profile Picture updated successfully","upload_result":upload_result}), 200
+                user.save(commit=True)
+                return jsonify({"message":"Profile Picture updated successfully","upload_result":upload_result}), 201
 
             except Exception as e:
                 app.logger.error('Failed to update profile picture: %s', str(e))
-                user.rollback()
+                # user.rollback()
                 return jsonify({'message': 'Failed to update profile picture'}), 500
         else:
            return jsonify({"message":"User not found"}), 404

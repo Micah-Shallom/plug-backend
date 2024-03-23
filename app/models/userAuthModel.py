@@ -40,9 +40,9 @@ class User(BaseModel, db.Model):
         return cls.query.filter_by(email=email).first()
 
 
-# class TokenBlockList(db.Model):
-#     __tablename__="tokenblocklist"
+class TokenBlockList(BaseModel, db.Model):
+    __tablename__="tokenblocklist"
 
-#     jti = db.Column(db.String(), nullable=False)
+    jti = db.Column(db.String(), nullable=False)
 
     
