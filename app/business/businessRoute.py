@@ -7,8 +7,8 @@ from app.models import db
 
 # Endpoint to create a new business
 @business_bp.post("/create")
-@jwt_required()
-@is_seller
+@jwt_required()      # Requires JWT authentication
+@is_seller           # Custom decorator to ensure current user is a seller
 def create_business():
     # Extract data from the request JSON
     data = request.get_json()
@@ -121,8 +121,8 @@ def get_business_by_id(business_id):
 
 # Endpoint to update a business listing
 @business_bp.put("/update/<string:business_id>")
-@jwt_required()
-@is_seller
+@jwt_required()      # Requires JWT authentication
+@is_seller           # Custom decorator to ensure current user is a seller
 def update_business(business_id):
     # Extract data from the request JSON
     data = request.get_json()
@@ -135,12 +135,13 @@ def update_business(business_id):
         return jsonify({"message": "Business not found"}), 404
 
     # Update business attributes with the provided data
-    business.title = data.get('title', business.name)
+    business.name = data.get('name', business.name)
     business.description = data.get('description', business.description)
 
     try:
         # Commit the changes to the database
         db.session.commit()
+
         # Return success message
         return jsonify({
             "message": "Business updated successfully"
@@ -151,15 +152,23 @@ def update_business(business_id):
 
 # Endpoint to delete a business listing
 @business_bp.delete("/delete/<string:business_id>")
-@jwt_required()
-@is_seller
+@jwt_required()      # Requires JWT authentication
+@is_seller           # Custom decorator to ensure current user is a seller
 def delete_listing(business_id):
     # Query the database for the business to delete
     business = Business.query.get(business_id)
+
     if not business:
         # Return error message if the business is not found
         return jsonify({'message': 'Business not found'}), 404
 
-#more features/routes
-#---------getting products registered under a business
-    
+    try:
+        # Delete the business from the database
+        db.session.delete(business)
+        db.session.commit()
+
+        # Return success message
+        return jsonify({'message': 'Business deleted successfully'}), 200
+    except Exception as e:
+        # Return error message if an exception occurs
+        return jsonify({"message": str(e)}), 500

@@ -7,36 +7,34 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class BaseModel(db.Model):
-    
     """
-        This class defines all common attributes/methods
-        for other class that would inherit it.
+    Base model class defining common attributes and methods for other classes.
     """
-
 
     __abstract__ = True
 
-
+    # Primary key using UUID as a string
     id = db.Column(db.String(256), primary_key=True, default=str(uuid()))
+
+    # Creation timestamp in UTC timezone
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    # Last update timestamp in UTC timezone, nullable for initial creation
     updated_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     def __init__(self, *args, **kwargs):
         """
-            Initialization of base model class
+        Initialization of the base model class.
 
-            Args:
-                args: Not used
-                Kwargs: constructor for the basemodel
+        Args:
+            *args: Not used.
+            **kwargs: Constructor for the base model.
 
-            Attributes:
-                id: unique id generated
-                created_at: creation date
-                updated_at: updated date
+        Attributes:
+            id: Unique ID generated.
+            created_at: Creation datetime.
+            updated_at: Updated datetime.
         """
-
-        # check if parameters were passed while inheriting
-        # and assign the to the base class
 
         if kwargs:
             for key, value in kwargs.items():
@@ -44,61 +42,69 @@ class BaseModel(db.Model):
                     value = datetime.now(timezone.utc)
                 if key != "__class__":
                     setattr(self, key, value)
-                if "id" not in kwargs:
-                    self.id = str(uuid())
-                if "created_at" not in kwargs:
-                    self.created_at = datetime.now(timezone.utc)
-                if "updated_at" not in kwargs:
-                    self.updated_at = datetime.now(timezone.utc)
+
+            # Initialize id, created_at, updated_at if not provided
+            if "id" not in kwargs:
+                self.id = str(uuid())
+            if "created_at" not in kwargs:
+                self.created_at = datetime.now(timezone.utc)
+            if "updated_at" not in kwargs:
+                self.updated_at = datetime.now(timezone.utc)
 
         else:
+            # Initialize with default values
             self.id = str(uuid())
             self.updated_at = self.created_at = datetime.now(timezone.utc)
 
     def __str__(self):
         """
-            This instance defines the property of the class in a string fmt
-            Return:
-                returns a string containing of class name, id and dict
+        String representation of the instance.
+
+        Return:
+            String containing class name, id, and instance dictionary.
         """
         return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def __repr__(self):
         """
-            Return:
-                returns a string representation of the calss
+        String representation of the instance.
 
+        Return:
+            String representation.
         """
         return self.__str__()
-    
+
     def to_dict(self):
         """
-            This instance creates a dictionary representation of the classs
+        Dictionary representation of the instance.
 
-            Return:
-                returns a dict rep of the class containing the
+        Return:
+            Dictionary representation containing class name and attributes.
         """
-
         base_dict = dict(self.__dict__)
         base_dict['__class__'] = str(type(self).__name__)
         base_dict['created_at'] = self.created_at.isoformat()
         base_dict['updated_at'] = self.updated_at.isoformat()
 
         return base_dict
-    
-    def before_save(self,*args, **kwargs):
+
+    def before_save(self):
+        """Hook method called before saving."""
         pass
 
-    def after_save(self, *args, **kwargs):
+    def after_save(self):
+        """Hook method called after saving."""
         pass
 
     def save(self, commit=True):
         """
-            This instance saves the current attributes in the class
-            and updates the updated_at attribute
+        Save the current instance to the database.
 
-            Return:
-                None
+        Args:
+            commit (bool): Whether to commit the transaction immediately.
+
+        Return:
+            None
         """
         self.before_save()
         db.session.add(self)
@@ -112,22 +118,53 @@ class BaseModel(db.Model):
         self.after_save()
 
     def before_update(self, *args, **kwargs):
+        """Hook method called before updating."""
         pass
 
     def after_update(self, *args, **kwargs):
+        """Hook method called after updating."""
         pass
 
     def update(self, *args, **kwargs):
+        """
+        Update the current instance in the database.
+
+        Args:
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Return:
+            None
+        """
         self.before_update(*args, **kwargs)
         db.session.commit()
         self.after_update(*args, **kwargs)
 
     def delete(self, commit=True):
+        """
+        Delete the current instance from the database.
+
+        Args:
+            commit (bool): Whether to commit the transaction immediately.
+
+        Return:
+            None
+        """
         db.session.delete(self)
         if commit:
             db.session.commit()
 
-    def bulk_create(self, data ,commit=True):
+    def bulk_create(self, data, commit=True):
+        """
+        Bulk create instances in the database.
+
+        Args:
+            data (list): List of instances to create.
+            commit (bool): Whether to commit the transaction immediately.
+
+        Return:
+            None
+        """
         db.session.add_all(data)
         if commit:
             db.session.commit()

@@ -17,8 +17,7 @@ def create_product():
     try:
         # Fetch the category from the provided data
         category = Category.query.filter_by(name=data.get("category")).first_or_404()
-        business = Business.query.filter_by(name=data.get("business")).first()
-
+        business = Business.query.filter_by(id=data.get("business")).first()
 
         # Extract necessary fields from the request data
         seller_id = current_user.id
@@ -100,7 +99,6 @@ def get_paginated_products():
                     "description": product.description,
                     "price": product.price,
                     "category_id": product.category_id
-                    # More fields can be added
                 }
             )
         
@@ -120,8 +118,7 @@ def get_paginated_products():
         }), 200
 
     except Exception as e:
-        return jsonify({"message":str(e)}), 500
-    
+        return jsonify({"message": str(e)}), 500
 
 # Endpoint to fetch a product listing by its id
 @product_bp.get("/<string:product_id>")
@@ -144,9 +141,9 @@ def get_product_by_id(product_id):
             "message": "Product fetched successfully",
             "data": product_data
         }), 200
+    
     except Exception as e:
         return jsonify({"message": str(e)}), 500
-    
 
 # Endpoint to update a product listing
 @product_bp.put("/update/<string:product_id>")
@@ -185,11 +182,47 @@ def delete_listing(product_id):
         product = Product.query.get(product_id)
         if not product:
             return jsonify({'message': 'Product not found'}), 404
+
+        # Delete the product from the database
+        db.session.delete(product)
+        db.session.commit()
+
+        return jsonify({
+            "message": "Product deleted successfully"
+        }), 200
+
     except Exception as e:
-        return jsonify({"message", str(e)}), 500
+        return jsonify({"message": str(e)}), 500
 
+# Endpoint to query products by business
+@product_bp.get("/by-business/<int:business_id>")
+def get_products_by_business(business_id):
+    try:
+        # Query products by business_id
+        products = Product.query.filter_by(business_id=business_id).all()
 
-#==========TO ADD=================
-"""
-    Ability to Query Products based on businesses
-"""
+        if not products:
+            # Return 404 if no products found for the business
+            return jsonify({"message": "No products found for this business"}), 404
+
+        # Prepare list of product dictionaries
+        products_data = []
+        for product in products:
+            product_data = {
+                "id": product.id,
+                "title": product.title,
+                "description": product.description,
+                "price": product.price,
+                "category_id": product.category_id
+            }
+            products_data.append(product_data)
+
+        # Return JSON response with products data
+        return jsonify({
+            "message": f"Products for Business ID {business_id} fetched successfully",
+            "products": products_data
+        }), 200
+
+    except Exception as e:
+        # Handle unexpected errors
+        return jsonify({"message": str(e)}), 500

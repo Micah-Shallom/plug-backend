@@ -3,7 +3,6 @@ from app.extensions import db
 from app.contactInfo import contact_bp
 from app.models.contactInfoModel import ContactInfo
 
-
 # Create a new contact information entry
 @contact_bp.route('/create', methods=['POST'])
 def create_contact_info():
@@ -24,7 +23,7 @@ def get_all_contact_info():
         result = []
 
         if not contact_info_list:
-            return jsonify({"message": "empty contact informations returned"}), 404
+            return jsonify({"message": "No contact information found"}), 404
         
         for contact_info in contact_info_list:
             contact_info_data = {
@@ -43,8 +42,7 @@ def get_all_contact_info():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-
-# Get a specific contact information entry by ID
+# Get a specific contact information entry by owner ID
 @contact_bp.route('/<string:user_id>', methods=['GET'])
 def get_contact_info(user_id):
     try:
@@ -67,7 +65,7 @@ def get_contact_info(user_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-# Update a specific contact information entry by ID
+# Update a specific contact information entry by owner ID
 @contact_bp.route('/update/<string:user_id>', methods=['PUT'])
 def update_contact_info(user_id):
     try: 
@@ -77,6 +75,7 @@ def update_contact_info(user_id):
         if not contact_info:
             return jsonify({"message": "Contact information not found"}), 404
 
+        # Update each field with the provided data
         for key, value in data.items():
             setattr(contact_info, key, value)
         
@@ -88,7 +87,7 @@ def update_contact_info(user_id):
         db.session.rollback()
         return jsonify({"message": str(e)}), 500
 
-# Delete a specific contact information entry by ID
+# Delete a specific contact information entry by owner ID
 @contact_bp.route('/delete/<string:user_id>', methods=['DELETE'])
 def delete_contact_info(user_id):
     contact_info = ContactInfo.query.filter_by(owner_id=user_id).first_or_404()

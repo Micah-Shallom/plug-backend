@@ -1,16 +1,18 @@
 from app.jwt_auth import auth_bp
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user, get_jwt_identity, get_jwt
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token, jwt_required, current_user,
+    get_jwt_identity, get_jwt
+)
 
 # Endpoint to register a new user
 @auth_bp.post("/register")
 def register_user():
-    from app.models.userAuthModel import User
-
+    from app.models.userAuthModel import User  # Import User model
+    
     data = request.get_json()
 
     try:
-
         # Check if username or email already exists
         existing_user = User.get_user_by_username(data.get("username"))
         existing_email = User.get_user_by_email(data.get("email"))
@@ -21,7 +23,7 @@ def register_user():
         if existing_email:
             return jsonify({"message": "An account has already been created with this email address"}), 400
 
-        # Create a new user
+        # Create a new user instance
         new_user = User(
             username=data.get("username"),
             fullname=data.get("fullname"),
@@ -29,7 +31,11 @@ def register_user():
             role=data.get("role"),
             password=data.get("password")
         )
+        
+        # Set the password securely
         new_user.set_password(data.get("password"))
+        
+        # Save the new user to the database
         new_user.save()
 
         return jsonify({"message": "User created successfully"}), 201
@@ -41,14 +47,16 @@ def register_user():
 # Endpoint to log in a user
 @auth_bp.post("/login")
 def login_user():
-    from app.models.userAuthModel import User
-
+    from app.models.userAuthModel import User  # Import User model
+    
     data = request.get_json()
 
     try:
+        # Check if the user exists and verify password
         user = User.get_user_by_username(username=data.get("username"))
 
         if user and (user.check_password(password=data.get("password"))):
+            # Generate access and refresh tokens
             access_token = create_access_token(identity=user.username)
             refresh_token = create_refresh_token(identity=user.password)
 
@@ -72,6 +80,7 @@ def login_user():
 @auth_bp.get('/whoami')
 @jwt_required()
 def who_am_i():
+    # Return current user's details from the JWT identity
     return jsonify({
         "message": "User details retrieved successfully",
         "user_details": {
@@ -86,31 +95,29 @@ def who_am_i():
 @auth_bp.get('/refresh')
 @jwt_required(refresh=True)
 def refresh_access_token():
+    # Refresh the access token using the current identity
     identity = get_jwt_identity()
-
     new_access_token = create_access_token(identity=identity)
-
     return jsonify({"access_token": new_access_token})
 
 # Endpoint to log out a user
 @auth_bp.get("/logout")
 @jwt_required(verify_type=False)
 def logout_user():
-    from app.models.userAuthModel import TokenBlockList
-
+    from app.models.userAuthModel import TokenBlockList  # Import TokenBlockList model
+    
     try:
-        
+        # Get JWT and revoke the token by adding to the blocklist
         jwt = get_jwt()
         jti = jwt['jti']
         token_type = jwt["type"]
 
         token_b = TokenBlockList(jti=jti)
-
+        
+        # Save the revoked token to the blocklist
         token_b.save(commit=True)
 
         return jsonify({"message": f"{token_type} revoked successfully and user has been logged out"}), 200
 
     except Exception as e:
         return jsonify({"message": str(e)}), 500
-
-    
