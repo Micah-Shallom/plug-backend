@@ -3,7 +3,6 @@ from app.extensions import db
 from app.contactInfo import payment_bp
 from app.models.paymentInfoModel import PaymentInfo
 
-
 # Create a new payment information entry
 @payment_bp.route('/create', methods=['POST'])
 def create_payment_info():
@@ -24,7 +23,7 @@ def get_all_payment_info():
         result = []
 
         if not payment_info_list:
-            return jsonify({"message": "empty payment information returned"}), 404
+            return jsonify({"message": "No payment information found"}), 404
         
         for payment_info in payment_info_list:
             payment_info_data = {
@@ -42,8 +41,7 @@ def get_all_payment_info():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-
-# Get a specific payment information entry by ID
+# Get a specific payment information entry by owner ID
 @payment_bp.route('/<string:user_id>', methods=['GET'])
 def get_payment_info(user_id):
     try:
@@ -61,12 +59,12 @@ def get_payment_info(user_id):
             }
             return jsonify(payment_info_data), 200
         else:
-            return jsonify({"message": "payment information not found"}), 404
+            return jsonify({"message": "Payment information not found"}), 404
 
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-# Update a specific payment information entry by ID
+# Update a specific payment information entry by owner ID
 @payment_bp.route('/update/<string:user_id>', methods=['PUT'])
 def update_payment_info(user_id):
     try: 
@@ -74,27 +72,28 @@ def update_payment_info(user_id):
         data = request.get_json()
 
         if not payment_info:
-            return jsonify({"message": "payment information not found"}), 404
+            return jsonify({"message": "Payment information not found"}), 404
 
+        # Update each field with the provided data
         for key, value in data.items():
             setattr(payment_info, key, value)
         
         payment_info.save(commit=True)
 
-        return jsonify({"message": "payment information updated successfully"}), 200
+        return jsonify({"message": "Payment information updated successfully"}), 200
     
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": str(e)}), 500
 
-# Delete a specific payment information entry by ID
+# Delete a specific payment information entry by owner ID
 @payment_bp.route('/delete/<string:user_id>', methods=['DELETE'])
 def delete_payment_info(user_id):
     payment_info = PaymentInfo.query.filter_by(owner_id=user_id).first_or_404()
 
     try:
         payment_info.delete(commit=True)
-        return jsonify({"message": "payment information deleted successfully"}), 200
+        return jsonify({"message": "Payment information deleted successfully"}), 200
     
     except Exception as e:
         db.session.rollback()

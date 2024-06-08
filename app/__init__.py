@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from app.extensions import db, jwt
 from flask_cors import CORS
+from datetime import timedelta
 
 
 def create_app(config_class=Config):
@@ -21,6 +22,8 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     CORS(app)
+
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)  # Set token expiry to 24 hours
 
     # Initialize Flask extensions
     db.init_app(app)

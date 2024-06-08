@@ -42,10 +42,7 @@ def get_products_by_category(category_id):
 # Route to retrieve a paginated list of products based on a specific category
 @category_bp.get("/<string:category_id>/paginated-products")
 def get_paginated_products_by_category(category_id):
-    # Pagination parameters
-
     try:
-
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 10, type=int)
 
@@ -114,13 +111,14 @@ def create_category():
 # Get all categories
 @category_bp.get("/all")
 def get_all_categories():
-    # Query all categories
     try:
-        data = Category.query.all()
+        # Query all categories
+        categories = Category.query.all()
 
+        # Prepare list of categories in JSON format
         category_list = []
 
-        for cat in data:
+        for cat in categories:
             category_list.append({
                 "name": cat.name,
                 "description": cat.description
