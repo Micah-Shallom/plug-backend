@@ -186,7 +186,7 @@ To run the application using Docker, follow these steps:
 
     ```http
     GET /products/seller/<string:seller_id>
-    ```v
+    ```
 
 ## Cloudinary Integration
 
